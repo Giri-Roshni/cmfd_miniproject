@@ -2,7 +2,6 @@
 import tkinter as tk
 from tkinter import filedialog, Label, Button, Frame
 import cv2
-from PIL import Image, ImageTk
 import os
 from detect import Detect
 from utils import resize_image, display_image
@@ -27,7 +26,7 @@ class ForgeryDetectionApp:
         self.choose_button = Button(self.frame, text="Choose Image", command=self.choose_image, font=("Arial", 12), bg="#1ABC9C", fg="white")
         self.choose_button.pack(pady=5)
         
-        self.detect_button = Button(self.frame, text="Detect Forgery", command=self.detect_forgery, font=("Arial", 12), bg="#E67E22", fg="white", state=tk.DISABLED)
+        self.detect_button = Button(self.frame, text="Detect Forgery", command=self.detect_forgery, font=("Arial", 12), bg="#E67E22", fg="black", state=tk.DISABLED)
         self.detect_button.pack(pady=5)
         
         self.image_label = Label(self.frame, bg="#34495E")
@@ -36,12 +35,14 @@ class ForgeryDetectionApp:
         self.result_label = Label(self.frame, text="", font=("Arial", 12), fg="yellow", bg="#34495E")
         self.result_label.pack(pady=10)
         
-        self.save_button = Button(self.frame, text="Save Results", command=self.save_results, font=("Arial", 12), bg="#3498DB", fg="white", state=tk.DISABLED)
+        self.save_button = Button(self.frame, text="Save Results", command=self.save_results, font=("Arial", 12), bg="#3498DB", fg="black", state=tk.DISABLED)
         self.save_button.pack(pady=5)
     
     def choose_image(self):
         image_path = filedialog.askopenfilename(title="Select an Image", filetypes=[("Image Files", "*.jpg;*.jpeg;*.png")])
         if image_path:
+
+            # read image using opencv(BGR format)
             self.image = cv2.imread(image_path)
             self.image = resize_image(self.image)
             display_image(self.image, self.image_label)
