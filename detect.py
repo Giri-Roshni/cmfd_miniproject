@@ -44,7 +44,7 @@ class Detect:
                 for i in range(1, len(points)):
                     cv2.line(forgery, points[0], points[i], (0, 255, 0), 3)
                     cv2.circle(non_forgery, points[i], 5, (0, 0, 255), -1)
-                    cv2.putText(forgery, "Copied", points[0], cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-                    cv2.putText(non_forgery, "Original", points[i], cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+                    cv2.putText(forgery, "Copied", points[0], cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
+                    cv2.putText(non_forgery, "Original", points[i], cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
         
         return forgery, non_forgery, forgery_parts
