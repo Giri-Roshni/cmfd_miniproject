@@ -1,3 +1,4 @@
+# Runs the application.
 import tkinter as tk
 from ui import ForgeryDetectionApp
 

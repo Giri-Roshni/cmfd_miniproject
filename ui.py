@@ -1,3 +1,4 @@
+# Manages the GUI (user interface) components.
 import tkinter as tk
 from tkinter import filedialog, Label, Button, Frame
 import os

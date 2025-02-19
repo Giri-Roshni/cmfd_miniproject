@@ -1,3 +1,4 @@
+# Contains helper functions like image resizing and displaying.
 import cv2
 from PIL import Image, ImageTk
 

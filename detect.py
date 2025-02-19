@@ -1,3 +1,4 @@
+# Contains the Detect class for forgery detection.
 import cv2
 import numpy as np
 from sklearn.cluster import DBSCAN
