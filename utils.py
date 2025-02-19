@@ -2,7 +2,7 @@
 import cv2
 from PIL import Image, ImageTk
 
-def resize_image(image, max_width=600, max_height=600):
+def resize_image(image, max_width=400, max_height=400):
     """Resize image while maintaining aspect ratio."""
     h, w, _ = image.shape
     scale_factor = min(max_width / w, max_height / h, 1)
