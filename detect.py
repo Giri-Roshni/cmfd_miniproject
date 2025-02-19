@@ -6,7 +6,7 @@ from sklearn.cluster import DBSCAN
 class Detect:
     def __init__(self, image):
         self.image = image
-    
+# hello
     def siftDetector(self):
         """Apply SIFT feature detection."""
         sift = cv2.SIFT_create()
