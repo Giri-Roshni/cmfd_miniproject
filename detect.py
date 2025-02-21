@@ -43,3 +43,4 @@ class Detect:
                     cv2.putText(non_forgery, "Original", points[idx1], cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
         
         return forgery, non_forgery, forgery_parts
+        
