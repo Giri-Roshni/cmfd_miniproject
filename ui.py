@@ -1,4 +1,3 @@
-# Manages the GUI (user interface) components.
 import tkinter as tk
 from tkinter import filedialog, Label, Button, Frame
 import os
@@ -40,12 +39,20 @@ class ForgeryDetectionApp:
     def choose_image(self):
         image_path = filedialog.askopenfilename(title="Select an Image", filetypes=[("Image Files", "*.jpg;*.jpeg;*.png")])
         if image_path:
+            # Clear the previous result
+            self.clear_previous_result()
+
             self.image = cv2.imread(image_path)
             self.image = resize_image(self.image)
             display_image(self.image, self.image_label)
             self.detect_button.config(state=tk.NORMAL)
             self.save_button.config(state=tk.DISABLED)
     
+    def clear_previous_result(self):
+        self.forgery_parts = None
+        self.result_label.config(text="", fg="green")
+        self.image_label.config(image='', text='')  # Clear the displayed image
+        
     def detect_forgery(self):
         if self.image is not None:
             detect_obj = Detect(self.image)
