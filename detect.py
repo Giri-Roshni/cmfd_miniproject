@@ -15,13 +15,14 @@ class Detect:
     
     def locateForgery(self, eps=40, min_sample=2):
         clusters = DBSCAN(eps=eps, min_samples=min_sample).fit(self.descriptors)
+        # Handling the clusters
         size = np.unique(clusters.labels_).shape[0] - 1
         forgery = self.image.copy()
         non_forgery = self.image.copy()
         
         if size == 0 and np.unique(clusters.labels_)[0] == -1:
             return None, None, None
-        
+        # grouping points by clusters
         size = max(size, 1)
         cluster_list = [[] for _ in range(size)]
         for idx, label in enumerate(clusters.labels_):
@@ -35,9 +36,10 @@ class Detect:
             if len(points) > 1:
                 forgery_parts.append(points)
                 for idx1 in range(1, len(points)):
-                    cv2.line(forgery, points[0], points[idx1], (0, 255, 0), 2)
+                    cv2.line(forgery, points[0], points[idx1], (200, 120, 100), 2)
                     cv2.circle(non_forgery, points[idx1], 5, (0, 0, 255), -1)
                     cv2.putText(forgery, "Copied", points[0], cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
+                    cv2.putText(forgery, "original", points[idx1], cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
                     cv2.putText(non_forgery, "Original", points[idx1], cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
         
         return forgery, non_forgery, forgery_parts
