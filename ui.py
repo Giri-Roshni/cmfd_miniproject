@@ -55,8 +55,8 @@ class ForgeryDetectionApp:
             if forgery_image is not None:
                 forgery_image = resize_image(forgery_image)
                 display_image(forgery_image, self.image_label)
-                parts_text = "\n".join([f"Forgery cluster at: {points}" for points in self.forgery_parts])
-                self.result_label.config(text=f"Forgery Detected:\n{parts_text}", fg="yellow")
+                # parts_text = "\n".join([f"Forgery cluster at: {points}" for points in self.forgery_parts])
+                # self.result_label.config(text=f"Forgery Detected:\n{parts_text}", fg="yellow")
                 self.save_button.config(state=tk.NORMAL)
             else:
                 self.result_label.config(text="No forgery detected!", fg="yellow")
