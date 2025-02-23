@@ -3,7 +3,7 @@ from tkinter import filedialog, Label, Button, Frame
 import os
 import cv2
 from detect import Detect
-from utils import resize_image, display_image
+from utils import resize_image, display_image, Image
 
 class ForgeryDetectionApp:
     def __init__(self, root):
@@ -89,7 +89,8 @@ class ForgeryDetectionApp:
         else:
             self.result_label.config(text="No forgery detected!", fg="Yellow")
 
-    
+            
+
     def save_results(self):
         """
         Saves the forgery-detected image, binary mask, and forgery details to a directory.
@@ -97,12 +98,23 @@ class ForgeryDetectionApp:
         if self.image is not None and self.forgery_parts is not None:
             save_dir = filedialog.askdirectory(title="Select Directory to Save Results")
             if save_dir:
+                # Save the forgery-detected image
                 forgery_image_path = os.path.join(save_dir, "forgery_detected.png")
-                cv2.imwrite(forgery_image_path, cv2.cvtColor(self.image, cv2.COLOR_RGB2BGR))
                 
+                # Retrieve the forgery-detected image from the Detect object
+                detect_obj = Detect(self.image)
+                detect_obj.siftDetector()
+                forgery_image, _, _, _, _ = detect_obj.locateForgery()
+                
+                if forgery_image is not None:
+                    # Save the forgery-detected image in BGR format (as it was displayed)
+                    cv2.imwrite(forgery_image_path, forgery_image)  # No need to convert to RGB
+                
+                # Save the binary mask
                 binary_image_path = os.path.join(save_dir, "binary_mask.png")
                 cv2.imwrite(binary_image_path, self.binary_mask)
                 
+                # Save the forgery details
                 forgery_details_path = os.path.join(save_dir, "forgery_details.txt")
                 with open(forgery_details_path, "w") as f:
                     for idx, points in enumerate(self.forgery_parts):

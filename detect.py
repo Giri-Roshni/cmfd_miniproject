@@ -50,5 +50,7 @@ class Detect:
                     
                     cv2.circle(binary_mask, points[0], 10, 255, -1)
                     cv2.circle(binary_mask, points[idx1], 10, 255, -1)
-    
+                
+                
+                    
         return forgery, non_forgery, forgery_parts, binary_mask, np.array(forgery_descriptors)
