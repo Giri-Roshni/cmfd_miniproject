@@ -68,25 +68,27 @@ class ForgeryDetectionApp:
         self.binary_label.config(image='', text='')
     
     def detect_forgery(self):
-        """
-        Detects forgery in the selected image and displays the results.
-        """
         if self.image is not None:
             detect_obj = Detect(self.image)
             detect_obj.siftDetector()
-            forgery_image, non_forgery_image, self.forgery_parts, self.binary_mask = detect_obj.locateForgery()
+            forgery_image, non_forgery_image, self.forgery_parts, self.binary_mask, forgery_descriptors = detect_obj.locateForgery()
+        
+        if forgery_image is not None:
+            forgery_image = resize_image(forgery_image)
+            display_image(forgery_image, self.forgery_label)
             
-            if forgery_image is not None:
-                forgery_image = resize_image(forgery_image)
-                display_image(forgery_image, self.forgery_label)
-                
-                binary_image = resize_image(self.binary_mask)
-                display_image(binary_image, self.binary_label)
-                
-                self.result_label.config(text=f"Forgery Detected", fg="Red")
-                self.save_button.config(state=tk.NORMAL)
-            else:
-                self.result_label.config(text="No forgery detected!", fg="Yellow")
+            binary_image = resize_image(self.binary_mask)
+            display_image(binary_image, self.binary_label)
+            
+            self.result_label.config(text=f"Forgery Detected", fg="Red")
+            self.save_button.config(state=tk.NORMAL)
+            
+            # Print descriptor vectors of forged parts
+            print("Descriptor vectors of forged regions:")
+            print(forgery_descriptors)
+        else:
+            self.result_label.config(text="No forgery detected!", fg="Yellow")
+
     
     def save_results(self):
         """

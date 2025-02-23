@@ -16,26 +16,24 @@ class Detect:
         return self.key_points, self.descriptors
     
     def locateForgery(self, eps=40, min_sample=2):
-        """
-        Detects forgery in the image using DBSCAN clustering.
-        Returns the forgery-detected image, non-forgery image, forgery parts, and binary mask.
-        """
         clusters = DBSCAN(eps=eps, min_samples=min_sample).fit(self.descriptors)
         size = np.unique(clusters.labels_).shape[0] - 1
         forgery = self.image.copy()
         non_forgery = self.image.copy()
         
         if size == 0 and np.unique(clusters.labels_)[0] == -1:
-            return None, None, None, None
+            return None, None, None, None, None
         
-        # Group points by clusters
         size = max(size, 1)
         cluster_list = [[] for _ in range(size)]
+        forgery_descriptors = []
+
         for idx, label in enumerate(clusters.labels_):
             if label != -1:
                 cluster_list[label].append(
                     (int(self.key_points[idx].pt[0]), int(self.key_points[idx].pt[1]))
                 )
+                forgery_descriptors.append(self.descriptors[idx])  # Store descriptors of forgery regions
         
         forgery_parts = []
         binary_mask = np.zeros_like(cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY))
@@ -50,8 +48,7 @@ class Detect:
                     cv2.putText(forgery, "Original", points[idx1], cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
                     cv2.putText(non_forgery, "Original", points[idx1], cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
                     
-                    # Create binary mask for copied and original regions
                     cv2.circle(binary_mask, points[0], 10, 255, -1)
                     cv2.circle(binary_mask, points[idx1], 10, 255, -1)
-        
-        return forgery, non_forgery, forgery_parts, binary_mask
+    
+        return forgery, non_forgery, forgery_parts, binary_mask, np.array(forgery_descriptors)
