@@ -3,7 +3,7 @@ from tkinter import filedialog, Label, Button, Frame
 import os
 import cv2
 from detect import Detect
-from utils import resize_image, display_image, Image
+from utils import resize_image, display_image
 
 class ForgeryDetectionApp:
     def __init__(self, root):
@@ -15,6 +15,7 @@ class ForgeryDetectionApp:
         self.image = None
         self.forgery_parts = None
         self.binary_mask = None
+        self.forgery_image = None  # To store the forgery-detected image
         
         self.frame = Frame(root, bg="#34495E")
         self.frame.pack(pady=20, padx=20, fill="both", expand=True)
@@ -63,6 +64,7 @@ class ForgeryDetectionApp:
         """
         self.forgery_parts = None
         self.binary_mask = None
+        self.forgery_image = None
         self.result_label.config(text="", fg="green")
         self.forgery_label.config(image='', text='')
         self.binary_label.config(image='', text='')
@@ -71,14 +73,14 @@ class ForgeryDetectionApp:
         if self.image is not None:
             detect_obj = Detect(self.image)
             detect_obj.siftDetector()
-            forgery_image, non_forgery_image, self.forgery_parts, self.binary_mask, forgery_descriptors = detect_obj.locateForgery()
+            self.forgery_image, _, self.forgery_parts, self.binary_mask, forgery_descriptors = detect_obj.locateForgery()
         
-        if forgery_image is not None:
-            forgery_image = resize_image(forgery_image)
-            display_image(forgery_image, self.forgery_label)
+        if self.forgery_image is not None:
+            forgery_image_resized = resize_image(self.forgery_image)
+            display_image(forgery_image_resized, self.forgery_label)
             
-            binary_image = resize_image(self.binary_mask)
-            display_image(binary_image, self.binary_label)
+            binary_image_resized = resize_image(self.binary_mask)
+            display_image(binary_image_resized, self.binary_label)
             
             self.result_label.config(text=f"Forgery Detected", fg="Red")
             self.save_button.config(state=tk.NORMAL)
@@ -89,35 +91,27 @@ class ForgeryDetectionApp:
         else:
             self.result_label.config(text="No forgery detected!", fg="Yellow")
 
-            
-
     def save_results(self):
         """
-        Saves the forgery-detected image, binary mask, and forgery details to a directory.
+        Saves the forgery-detected image, binary mask, and keypoint clusters to a directory.
         """
         if self.image is not None and self.forgery_parts is not None:
             save_dir = filedialog.askdirectory(title="Select Directory to Save Results")
             if save_dir:
                 # Save the forgery-detected image
                 forgery_image_path = os.path.join(save_dir, "forgery_detected.png")
-                
-                # Retrieve the forgery-detected image from the Detect object
-                detect_obj = Detect(self.image)
-                detect_obj.siftDetector()
-                forgery_image, _, _, _, _ = detect_obj.locateForgery()
-                
-                if forgery_image is not None:
-                    # Save the forgery-detected image in BGR format (as it was displayed)
-                    cv2.imwrite(forgery_image_path, forgery_image)  # No need to convert to RGB
+                cv2.imwrite(forgery_image_path, self.forgery_image)
                 
                 # Save the binary mask
                 binary_image_path = os.path.join(save_dir, "binary_mask.png")
                 cv2.imwrite(binary_image_path, self.binary_mask)
                 
-                # Save the forgery details
-                forgery_details_path = os.path.join(save_dir, "forgery_details.txt")
-                with open(forgery_details_path, "w") as f:
+                # Save the keypoint clusters
+                keypoint_clusters_path = os.path.join(save_dir, "keypoint_clusters.txt")
+                with open(keypoint_clusters_path, "w") as f:
                     for idx, points in enumerate(self.forgery_parts):
-                        f.write(f"Cluster {idx + 1}: {points}\n")
+                        f.write(f"Cluster {idx + 1}:\n")
+                        for point in points:
+                            f.write(f"  {point}\n")
                 
                 self.result_label.config(text="Results saved successfully!", fg="yellow")
